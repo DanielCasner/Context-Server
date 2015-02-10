@@ -2,7 +2,6 @@ from django.db import models
 
 class DataChannel(models.Model):
     "Information about a single data source"
-    NEED EXPLICIT PRIMARY KEY FOR POSTS TO WORK
     chanID = models.IntegerField(primary_key=True, unique=True, verbose_name="Channel ID",
         help_text="Unique integer primary key for the channel, you can specify but it must be unique.")
     name = models.CharField(max_length=255, verbose_name="Name of the data channel",
