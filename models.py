@@ -1,4 +1,5 @@
 from django.db import models
+import cPickle as pickle
 
 class DataChannel(models.Model):
     "Information about a single data source"
@@ -10,8 +11,19 @@ class DataChannel(models.Model):
                                   default=False)
     source = models.CharField(max_length=255, verbose_name="Source code URL", blank=True,
                               help_text="Where to get source code for this channel's data generator")
-    rest = models.TextField(verbose_name="JSON data.", default="{}",
+    rest = models.TextField(verbose_name="JSON data.", default=pickle.dumps({}, 0),
                             help_text="Additional fields without fixed schema")
+
+    def getRest(self):
+        return pickle.loads(self.rest)
+
+    def setRest(self, d):
+        self.rest = pickle.dumps(d, 2)
+
+    def asJSON(self):
+        d = self.getRest()
+        d.update({'chanID': self.chanID, "name": self.name, "derived": self.derived, "source": self.source})
+        return repr(d)
 
 
 
@@ -21,5 +33,16 @@ This table is designed for flexibility so the schema is not complete, most of th
     time = models.DateTimeField(auto_now_add=True, editable=False,
                                 verbose_name="Timestamp for this data entry")
     channel = models.ForeignKey('DataChannel', editable=False, verbose_name="Data channel")
-    rest = models.TextField(verbose_name="JSON data", default="{}", editable=False,
+    rest = models.TextField(verbose_name="JSON data", default=pickle.dumps({}, 0), editable=False,
                             help_text="Non-fixed-schema data")
+
+    def getRest(self):
+        return pickle.loads(self.rest)
+
+    def setRest(self, d):
+        self.rest = pickle.dumps(d, 2)
+
+    def asJSON(self):
+        d = self.getRest()
+        d.update({"time": self.time, "channel": self.channel})
+        return
