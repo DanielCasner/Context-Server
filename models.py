@@ -26,13 +26,17 @@ class DataChannel(models.Model):
         return repr(d)
 
 
-
 class DataEntry(models.Model):
     """Table for storing context data, either raw or derrived.
 This table is designed for flexibility so the schema is not complete, most of the channel data is stored as JSON."""
     time = models.DateTimeField(auto_now_add=True, editable=False,
                                 verbose_name="Timestamp for this data entry")
+    interval = models.TimeDeltaField(default=0, editable=False,
+                                     verbose_name="Time interval width for this data entry.")
+    location = models.GeoField(blank=True, null=True, editable=False,
+                               verbose_name="Geo-location for this data entry.")
     channel = models.ForeignKey('DataChannel', editable=False, verbose_name="Data channel")
+    
     rest = models.TextField(verbose_name="JSON data", default=pickle.dumps({}, 0), editable=False,
                             help_text="Non-fixed-schema data")
 
