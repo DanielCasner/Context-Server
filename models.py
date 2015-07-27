@@ -6,6 +6,9 @@ class RestModelBase(models.Model):
     rest = models.TextField(verbose_name="JSON data.", default=pickle.dumps({}, 0),
                             help_text="Additional fields without fixed schema")
 
+    class Meta:
+        abstract = True
+
     def getRest(self):
         return pickle.loads(self.rest)
 
